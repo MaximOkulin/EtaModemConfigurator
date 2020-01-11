@@ -1,0 +1,15 @@
+﻿<Window
+        xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui" 
+        x:Class="EtaModemConfigurator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dxc="http://schemas.devexpress.com/winfx/2008/xaml/core"
+        mc:Ignorable="d"
+        Height="500" Width="650" WindowStyle="ToolWindow" Background="Black" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid Margin="0,0,0,0">
+        <dxwui:NavigationFrame Margin="0,0,0,0" Source="MainView" AnimationType="SlideHorizontal"/>
+        <Label Name="lblVersionInfo"  Foreground="Gray" Margin="10,434,194,-8"/>
+    </Grid>
+</Window>

@@ -1,0 +1,399 @@
+﻿<UserControl x:Class="EtaModemConfigurator.Views.DashboardView"
+             xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+             mc:Ignorable="d" 
+             xmlns:dxwuin="http://schemas.devexpress.com/winfx/2008/xaml/windowsui/navigation"
+             xmlns:myns="clr-namespace:EtaModemConfigurator.ValidationRules"
+             xmlns:mytypes="clr-namespace:EtaModemConfigurator.Types"
+             xmlns:myctrls="clr-namespace:EtaModemConfigurator.Controls"
+             xmlns:myconvert="clr-namespace:EtaModemConfigurator.Converters"
+             xmlns:etaControls="clr-namespace:GSMSignalLevelLibrary;assembly=GSMSignalLevelLibrary"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             Margin="0,0,0,0"
+             dx:ThemeManager.ThemeName="MetropolisDark" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+    <Control.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <DockPanel LastChildFill="True">
+                            <TextBlock DockPanel.Dock="Right" Foreground="Red" FontSize="14" FontWeight="Bold"
+                                                       Text="*"/>
+                            <Border BorderBrush="Green" BorderThickness="1">
+                                <AdornedElementPlaceholder Name="adornerPlaceholder"/>
+                            </Border>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="ToolTip" 
+                         Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type myctrls:MaskedTextBox}">
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <DockPanel LastChildFill="True">
+                            <TextBlock DockPanel.Dock="Right" Foreground="Red" FontSize="14" FontWeight="Bold"
+                                                       Text="*"/>
+                            <Border BorderBrush="Green" BorderThickness="1">
+                                <AdornedElementPlaceholder Name="adornerPlaceholder"/>
+                            </Border>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="ToolTip" 
+                         Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="ImageButtonStyle">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentPresenter/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <myconvert:ShortToBooleanConverter x:Key="ShortToBooleanConverter" />
+    </Control.Resources>
+    <Grid Margin="0,0,0,0">
+        <dx:WaitIndicator Name="waitIndicator" DeferedVisibility="{Binding WaitIndicatorState,UpdateSourceTrigger=PropertyChanged}" Content="{Binding CurrentOperationName}" Margin="100,150,70,190" Grid.Row="0" Panel.ZIndex="3">
+            <dx:WaitIndicator.ContentTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Запись настроек в модем" FontSize="14" Width="200"/>
+                        <TextBlock Text="{Binding}" Width="200"/>
+                    </StackPanel>
+                </DataTemplate>
+            </dx:WaitIndicator.ContentTemplate>
+        </dx:WaitIndicator>
+        <dxwui:PageAdornerControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-10,-20,0,0" IsEnabled="True" BackCommand="{Binding BackCommand}"/>
+        <Label HorizontalAlignment="Left" VerticalAlignment="Top" Margin="95,15,0,0" FontSize="18" Foreground="Orange" Content="Настройки модема"/>
+        <etaControls:GSMSignalLevel Level="{Binding SignalQuality}" ConnectionState="{Binding ConnectionState}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,20,20,0"/>
+        <dx:DXTabControl HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,65,0,0">
+            <dx:DXTabItem Header="Общие" Margin="0,0,0,0">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Режим работы:" ToolTip="Режим работы модема"/>
+                        <ComboBox ItemsSource="{Binding ModemModeList}" SelectedValuePath="Key" DisplayMemberPath="Value" FontSize="14" SelectedValue ="{Binding ModemModeId, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="25" Width="80"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Отладка:" ToolTip="Флаг вывода отладочной информации (кодов ошибок). Установите галочку, если хотите получать коды ошибок"/>
+                        <CheckBox Height="25" Width="50" IsChecked="{Binding DebugModeId, Converter={StaticResource ShortToBooleanConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Modbus-адрес:"/>
+                        <TextBox FontSize="14" Width="80" Height="25" TextAlignment="Left">
+                            <Binding Path="NetworkAddress" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:StringRule MinLength="0" MaxLength="255" />
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Таймер перезагрузки (мин):" ToolTip="Таймер перезагрузки. 0 - не используется. По умолчанию 24 часа. Задается в минутах"/>
+                        <TextBox FontSize="14" Width="80" Height="25" TextAlignment="Left">
+                            <Binding Path="RebootTime" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:StringRule MinLength="0" MaxLength="65535" />
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </dx:DXTabItem>
+
+            <dx:DXTabItem Header="Интернет">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Пин-код:" ToolTip="Пин-код SIM-карты"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="Pin" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="0" Max="9999"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="APN:" ToolTip="APN точки доступа оператора связи"/>
+                        <TextBox FontSize="14" Width="275" Height="25" TextAlignment="Left">
+                            <Binding Path="Apn" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:StringRule MinLength="0" MaxLength="31"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Логин:" ToolTip="Логин пользователя"/>
+                        <TextBox FontSize="14" Width="275" Height="25" TextAlignment="Left">
+                            <Binding Path="Login" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:StringRule MinLength="0" MaxLength="19"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="40" Content="Пароль:" ToolTip="Пароль пользователя"/>
+                        <TextBox FontSize="14" Width="275" Height="25" TextAlignment="Left">
+                            <Binding Path="Password" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:StringRule MinLength="0" MaxLength="19"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </dx:DXTabItem>
+            <dx:DXTabItem Header="Режим клиента" IsEnabled="{Binding IsClientTabEnabled}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="25" Content="Идентификатор:" ToolTip="Идентификатор модема, отправляемый удаленной стороне при подключении"/>
+                        <TextBox FontSize="14" Width="280" Height="25" TextAlignment="Left">
+                            <Binding Path="Identifier" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:StringRule MinLength="1" MaxLength="63" />
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="490" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0, 6, 0, 0" VerticalAlignment="Top" Width="200" Height="25" Content="Количество серверов:" ToolTip="Количество серверов, к которым модем поочередно подключается в режиме клиента"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="ServCount" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="1" Max="3" />
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0,6,0,0" VerticalAlignment="Top" Width="200" Height="30" Content="IP-адрес сервера 1:"/>
+                        <TextBox FontSize="14" Width="125" Height="25" TextAlignment="Left">
+                            <Binding Path="Addr_1" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:IpAddressRule/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0" VerticalAlignment="Top" Width="50" Height="30" Content="Порт:"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="Port_1" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="0" Max="65535"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0,6,0,0" IsEnabled="{Binding IpAddress2Enabled}" VerticalAlignment="Top" Width="200" Height="30" Content="IP-адрес сервера 2:"/>
+                        <TextBox FontSize="14" Width="125" Height="25" TextAlignment="Left" IsEnabled="{Binding IpAddress2Enabled}" >
+                            <Binding Path="Addr_2" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:IpAddressRule/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0" IsEnabled="{Binding Port2Enabled}" VerticalAlignment="Top" Width="50" Height="30" Content="Порт:"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left" IsEnabled="{Binding Port2Enabled}" >
+                            <Binding Path="Port_2" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="0" Max="65535"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="0,6,0,0" IsEnabled="{Binding IpAddress3Enabled}" VerticalAlignment="Top" Width="200" Height="30" Content="IP-адрес сервера 3:"/>
+                        <TextBox FontSize="14" Width="125" Height="25" TextAlignment="Left" IsEnabled="{Binding IpAddress3Enabled}">
+                            <Binding Path="Addr_3" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:IpAddressRule/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  IsEnabled="{Binding Port3Enabled}" VerticalAlignment="Top" Width="50" Height="30" Content="Порт:"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left" IsEnabled="{Binding Port3Enabled}">
+                            <Binding Path="Port_3" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="0" Max="65535"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </dx:DXTabItem>
+            <dx:DXTabItem Header="Режим сервера" IsEnabled="{Binding IsServerTabEnabled}">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0" VerticalAlignment="Top" Width="250" Height="30" Content="Прослушиваемый порт:"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="ListenPort" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="0" Max="65535"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0" VerticalAlignment="Top" Width="250" Height="30" Content="Задержка перед реконнектом (сек):" ToolTip="Задержка перед повторным реконнектом с серверами, сек"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="TimeForReconnect" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="0" Max="65535"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </dx:DXTabItem>
+            <dx:DXTabItem Header="COM-порт">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0" VerticalAlignment="Top" Width="300" Height="40" Content="Интерфейс:"/>
+                        <ComboBox ItemsSource="{Binding SerialList}" SelectedValuePath="Key" DisplayMemberPath="Value" FontSize="14" SelectedValue ="{Binding SelectSerial, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="25" Width="140"/>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Скорость (бод):" ToolTip="Скорость коммуникационного последовательного порта"/>
+                        <ComboBox ItemsSource="{Binding BaudRateList}"  FontSize="14" SelectedItem="{Binding BaudRate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="25" Width="140"/>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Формат кадра данных:" ToolTip="Формат кадры данных последовательного порта"/>
+                        <ComboBox ItemsSource="{Binding DataFormatList}" SelectedValuePath="Key" DisplayMemberPath="Value" FontSize="14" SelectedValue ="{Binding DataFormat, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" Height="25" Width="140">
+                            <ComboBox.Resources>
+                                <mytypes:BindingProxy Data="{Binding}" x:Key="proxy"/>
+                            </ComboBox.Resources>
+                            <ComboBox.SelectedItem>
+                                <Binding Path="DataFormat" ValidatesOnDataErrors="True" ValidatesOnExceptions="True" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <myns:DataFormatRule>
+                                            <myns:DataFormatRule.Wrapper>
+                                                <mytypes:Wrapper TransportTypeId="{Binding Path=Data.TransportTypeId, Source={StaticResource proxy}}"/>
+                                            </myns:DataFormatRule.Wrapper>
+                                        </myns:DataFormatRule>
+                                        <ExceptionValidationRule/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </ComboBox.SelectedItem>
+                        </ComboBox>
+                    </StackPanel>
+                </StackPanel>
+            </dx:DXTabItem>
+            <dx:DXTabItem Header="IP-пакеты">
+                <StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Количество повторов доставки:"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="NmRetry" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="3" Max="8"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Количество ожиданий перед отправкой:" ToolTip="Данный параметр умножается на 200 мс"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="WaitTm" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="2" Max="10"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Размер блока данных (байт):" ToolTip="Размер блока данных принимаемых с последовательного порта перед отправкой пакета"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="SendSz" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="1" Max="1460"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Использовать задержку перед отправкой:" ToolTip="Установите галочку, если следует использовать задержку перед отправкой в последовательный порт"/>
+                        <CheckBox Height="25" Width="50" IsChecked="{Binding RxMode, Converter={StaticResource ShortToBooleanConverter}}" />
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Задержка принимаемых данных (мс):" ToolTip="Задержка принимаемых данных с последовательного порта перед повторной отправкой (мс)"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="RxTimer" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="20" Max="1000"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Размер исходящих данных каждого пакета:"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="RxSize" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="50" Max="1460"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                    <StackPanel  Orientation="Horizontal" Width="510" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <Label FontSize="14" HorizontalAlignment="Left" Margin="15,6,0,0"  VerticalAlignment="Top" Width="300" Height="40" Content="Время проверки наличия соединения (сек):" ToolTip="Время для проверки наличия соединения с удаленной стороной в случае отсутствия активности"/>
+                        <TextBox FontSize="14" Width="75" Height="25" TextAlignment="Left">
+                            <Binding Path="CheckPeriod" NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <myns:MinMaxRule Min="10" Max="600"/>
+                                    <ExceptionValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox>
+                    </StackPanel>
+                </StackPanel>
+            </dx:DXTabItem>
+        </dx:DXTabControl>
+
+
+        <dx:SimpleButton x:Name="btnSave" IsEnabled="{Binding SaveButtonIsEnabled}" Command="{Binding SaveCommand}" Height="29" Width="100" FontSize="14" Content="Сохранить" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,80,28"/>
+        <dx:SimpleButton Name="btnImport" Command="{Binding ImportButtonPressed}" Content="Импорт" Height="29" Width="100" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="80,0,0,28"/>
+        <dx:SimpleButton Name="btnExport" Command="{Binding ExportButtonPressed}" Content="Экспорт" Height="29" Width="100" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,28"/>
+    </Grid>
+</UserControl>
